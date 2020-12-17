@@ -42,3 +42,34 @@ mod tests {
 
     }
 }
+
+
+pub enum ErrorType {
+    Unknown,
+}
+
+pub struct Error {
+    pub error_type: ErrorType,
+    pub details: String
+}
+
+pub trait SettingsStorage {
+    fn save(&mut self, settings: HashMap<String, String>) -> Result<(), Error>;
+    //fn load(&self) -> HashMap<String, String>;
+}
+
+pub struct MemoryStorage {
+    data: HashMap<String, String>,
+}
+
+impl SettingsStorage for MemoryStorage {
+    fn save(&mut self, settings: HashMap<String, String>) -> Result<(), Error> {
+        self.data = settings;
+        return Ok(());
+    }
+
+    //fn load(&self) -> HashMap<String, String> {
+    //    return self.data;
+    //}
+}
+
