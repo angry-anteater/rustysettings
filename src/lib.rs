@@ -54,22 +54,20 @@ pub struct Error {
 }
 
 pub trait SettingsStorage {
-    fn save(&mut self, settings: HashMap<String, String>) -> Result<(), Error>;
-    //fn load(&self) -> HashMap<String, String>;
+    fn save(&self, settings: HashMap<String, String>) -> Result<(), Error>;
+    fn load(&self) -> Result<HashMap<String, String>, Error>;
 }
 
-pub struct MemoryStorage {
-    data: HashMap<String, String>,
-}
+pub struct DummyStorage { }
 
-impl SettingsStorage for MemoryStorage {
-    fn save(&mut self, settings: HashMap<String, String>) -> Result<(), Error> {
-        self.data = settings;
+impl SettingsStorage for DummyStorage {
+    fn save(&self, _settings: HashMap<String, String>) -> Result<(), Error> {
         return Ok(());
     }
 
-    //fn load(&self) -> HashMap<String, String> {
-    //    return self.data;
-    //}
+    fn load(&self) -> Result<HashMap<String, String>, Error> {
+        return Ok(HashMap::new());
+    }
+
 }
 
