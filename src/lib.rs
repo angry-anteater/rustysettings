@@ -1,24 +1,26 @@
 
 use std::collections::HashMap;
+use std::cell::RefCell;
+use std::rc::Rc;
 
 pub struct Settings {
-    data: HashMap<String, String>,
+    data: Rc<RefCell<HashMap<String, String>>>,
 }
 
 impl Settings {
     pub fn new() -> Settings {
         let data: HashMap<String, String> = HashMap::new();
-        return Settings{data};
+        return Settings{data: Rc::new(RefCell::new(data))};
     }
 
-    pub fn get(&mut self, name: &str, default: &str) -> String {
+    pub fn get(&self, name: &str, default: &str) -> String {
         let name = name.to_string();
         let default = default.to_string();
-        return self.data.entry(name).or_insert(default).to_string();
+        return self.data.borrow_mut().entry(name).or_insert(default).to_string();
     }
 
-    pub fn set(&mut self, name: &str, value: &str) {
-        self.data.insert(name.to_string(), value.to_string());
+    pub fn set(&self, name: &str, value: &str) {
+        self.data.borrow_mut().insert(name.to_string(), value.to_string());
     }
 }
 
@@ -26,7 +28,7 @@ impl Settings {
 mod tests {
     #[test]
     fn test_getting_with_default() {
-        let mut settings = crate::Settings::new();
+        let settings = crate::Settings::new();
         let result = settings.get("test", "moose");
         assert_eq!(result, "moose");
         let result2 = settings.get("test2", "orange");
@@ -35,11 +37,10 @@ mod tests {
 
     #[test]
     fn test_getting_after_setting() {
-        let mut settings = crate::Settings::new();
+        let settings = crate::Settings::new();
         settings.set("test", "monkey");
         let result = settings.get("test", "moose");
         assert_eq!(result, "monkey");
-
     }
 }
 
